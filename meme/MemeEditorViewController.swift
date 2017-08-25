@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class MemeEditorViewController: UIViewController {
 
   @IBOutlet weak var imgMeme: UIImageView!
   @IBOutlet weak var container: UIView!
@@ -100,9 +100,14 @@ class ViewController: UIViewController {
   private func shareMeme() {
     let meme = buildMemeImage()
     let activityView = UIActivityViewController(activityItems: [meme], applicationActivities: nil)
-    present(activityView, animated: true) {
-      self.saveMeme(meme: meme)
+    activityView.completionWithItemsHandler = { activity, success, items, error in
+      if (success) {
+        self.saveMeme(meme: meme)
+        self.dismiss(animated: true, completion: nil)
+      }
     }
+    
+    present(activityView, animated: true)
   }
   
   
@@ -234,7 +239,7 @@ class ViewController: UIViewController {
 
 
 // MARK: - UIImagePickerControllerDelegate
-extension ViewController: UIImagePickerControllerDelegate {
+extension MemeEditorViewController: UIImagePickerControllerDelegate {
   
   private func dismiss(_ picker: UIImagePickerController) {
     picker.dismiss(animated: true, completion: nil)
@@ -255,11 +260,11 @@ extension ViewController: UIImagePickerControllerDelegate {
 
 
 // MARK: - UINavigationControllerDelegate
-extension ViewController: UINavigationControllerDelegate {}
+extension MemeEditorViewController: UINavigationControllerDelegate {}
 
 
 // MARK: - UITextFieldDelegate
-extension ViewController: UITextFieldDelegate {
+extension MemeEditorViewController: UITextFieldDelegate {
   
   public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
     activeTextField = textField
