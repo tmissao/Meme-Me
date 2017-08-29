@@ -88,13 +88,7 @@ class MemeEditorViewController: UIViewController {
     let enabled = imgMeme.image != nil
     btnShare.isEnabled = enabled
   }
-  
-  
-  /// Checks if the Cancel button should be enabled
-  fileprivate func shouldEnableCancelButton() {
-    let enabled = imgMeme.image != nil || textBottom.text != defaultTopText || textTop.text != defaultBottomText
-    btnCancel.isEnabled = enabled
-  }
+
   
   /// Shares built meme
   private func shareMeme() {
@@ -104,6 +98,7 @@ class MemeEditorViewController: UIViewController {
       if (success) {
         self.saveMeme(meme: meme)
         self.dismiss(animated: true, completion: nil)
+        let _ = self.navigationController?.popViewController(animated: true)
       }
     }
     
@@ -113,7 +108,8 @@ class MemeEditorViewController: UIViewController {
   
   /// Saves Meme
   private func saveMeme(meme: UIImage) {
-    let _ = Meme(topText: textTop.text!, bottomText: textBottom.text!, originalImage: imgMeme.image!, memedImage: meme)
+    let meme = Meme(topText: textTop.text!, bottomText: textBottom.text!, originalImage: imgMeme.image!, memedImage: meme)
+    AppDelegate.shared.memes.append(meme)
   }
 
   
@@ -135,7 +131,6 @@ class MemeEditorViewController: UIViewController {
     textBottom.text = defaultBottomText
     imgMeme.image = nil
     btnShare.isEnabled = false
-    btnCancel.isEnabled = false
     btnCamera.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
   }
   
@@ -219,9 +214,10 @@ class MemeEditorViewController: UIViewController {
   }
 
   // MARK: UIActions
-  
-  @IBAction func resetView(_ sender: Any) {
+
+  @IBAction func cancel(_ sender: Any) {
     reset()
+    let _ = navigationController?.popViewController(animated: true)
   }
 
   @IBAction func getImageFromCamera(_ sender: Any) {
@@ -253,7 +249,6 @@ extension MemeEditorViewController: UIImagePickerControllerDelegate {
     guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {return}
     imgMeme.image = image
     shouldEnableShareButton()
-    shouldEnableCancelButton()
     dismiss(picker)
   }
 }
@@ -281,7 +276,6 @@ extension MemeEditorViewController: UITextFieldDelegate {
   }
   
   public func textFieldDidEndEditing(_ textField: UITextField) {
-    shouldEnableCancelButton()
     activeTextField = nil
   }
 }
